@@ -90,6 +90,39 @@ P.S. You can delete this when you're done too. It's your config now! :)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+-- Primes remaps
+-- Exit back to file tree
+vim.keymap.set('n', '<leader>pv', vim.cmd.Ex)
+-- Telescope
+local builtin = require 'telescope.builtin'
+vim.keymap.set('n', '<leader>pf', builtin.find_files, {})
+vim.keymap.set('n', '<C-p>', builtin.git_files, {})
+vim.keymap.set('n', '<leader>ps', function()
+  builtin.grep_string { search = vim.fn.input 'Grep > ' }
+end)
+-- Undo Tree
+vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle)
+
+-- Harpoon
+local mark = require 'harpoon.mark'
+local ui = require 'harpoon.ui'
+
+vim.keymap.set('n', '<leader>a', mark.add_file)
+vim.keymap.set('n', '<C-e>', ui.toggle_quick_menu)
+
+vim.keymap.set('n', '<C-j>', function()
+  ui.nav_file(1)
+end)
+vim.keymap.set('n', '<C-k>', function()
+  ui.nav_file(2)
+end)
+vim.keymap.set('n', '<C-l>', function()
+  ui.nav_file(3)
+end)
+vim.keymap.set('n', '<C-h>', function()
+  ui.nav_file(4)
+end)
+
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = false
 
@@ -102,7 +135,7 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -240,7 +273,8 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
-
+  'mbbill/undotree',
+  'ThePrimeagen/harpoon',
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
@@ -665,17 +699,18 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        -- pyright = {},
-        -- rust_analyzer = {},
+        pyright = {},
+        rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
-        --
-
+        ts_ls = {},
+        jsonls = {},
+        superhtml = {},
+        cssls = {},
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
