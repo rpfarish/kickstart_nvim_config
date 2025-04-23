@@ -35,7 +35,6 @@ What is Kickstart?
     If you don't know anything about Lua, I recommend taking some time to read through
     a guide. One possible example which will only take 10-15 minutes:
       - https://learnxinyminutes.com/docs/lua/
-
     After understanding a bit more about Lua, you can use `:help lua-guide` as a
     reference for how Neovim integrates Lua.
     - :help lua-guide
@@ -100,6 +99,7 @@ vim.keymap.set('n', '<C-p>', builtin.git_files, {})
 vim.keymap.set('n', '<leader>ps', function()
   builtin.grep_string { search = vim.fn.input 'Grep > ' }
 end)
+vim.keymap.set('n', '<leader>gs', vim.cmd.Git)
 -- Undo Tree
 vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle)
 
@@ -273,8 +273,30 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
-  'mbbill/undotree',
+  {
+    'mbbill/undotree',
+    init = function()
+      -- Open undotree in a vertical split on the right
+      vim.g.undotree_WindowLayout = 2
+
+      -- Show the help line at the bottom of undotree
+      vim.g.undotree_HelpLine = 0
+
+      -- Disable auto open when undoing/redoing
+      vim.g.undotree_SetFocusWhenToggle = 1
+
+      -- Optionally hide help in Undotree window
+      vim.g.undotree_ShortIndicators = 1
+      vim.g.undotree_SplitWidth = 30
+    end,
+  },
   'ThePrimeagen/harpoon',
+  {
+    'numToStr/Comment.nvim',
+    opts = {
+      -- add any options here
+    },
+  },
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
@@ -796,10 +818,10 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
+        python = { 'isort', 'black' },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        javascript = { 'prettier', 'prettierd', stop_after_first = true },
       },
     },
   },
