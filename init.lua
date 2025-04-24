@@ -24,6 +24,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Primes remaps
+vim.keymap.set('i', 'jj', '<esc>', { desc = 'Escape to Normal mode' })
 -- Exit back to file tree
 vim.keymap.set('n', '<leader>pv', vim.cmd.Ex, { desc = 'Go Back to [P]roject [V]iew' })
 -- Telescope
@@ -61,6 +62,7 @@ end)
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = false
+vim.opt.colorcolumn = '80'
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -219,7 +221,8 @@ require('lazy').setup({
 
       -- Define a single highlight group for active scope
       hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
-        vim.api.nvim_set_hl(0, 'IblScope', { fg = '#565a8f' }) -- soft blue gray
+        vim.api.nvim_set_hl(0, 'IblScope', { fg = '#5f699b' }) -- soft gray
+        -- other color is #3b4261 darker gray
         vim.api.nvim_set_hl(0, 'IblIndent', { fg = 'NONE', nocombine = true })
       end)
 
@@ -237,7 +240,37 @@ require('lazy').setup({
       }
     end,
   },
+  {
+    'folke/zen-mode.nvim',
+    config = function()
+      -- vim.keymap.set('n', '<leader>zz', function()
+      --   require('zen-mode').setup {
+      --     window = {
+      --       width = 90,
+      --       options = {},
+      --     },
+      --   }
+      --   require('zen-mode').toggle()
+      --   vim.wo.wrap = false
+      --   vim.wo.number = true
+      --   vim.wo.rnu = true
+      -- end)
 
+      vim.keymap.set('n', '<leader>zz', function() -- was leader zZ
+        require('zen-mode').setup {
+          window = {
+            width = 180,
+            options = {},
+          },
+        }
+        require('zen-mode').toggle()
+        vim.wo.wrap = false
+        vim.wo.number = false
+        vim.wo.rnu = false
+        vim.opt.colorcolumn = '0'
+      end)
+    end,
+  },
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
@@ -259,12 +292,13 @@ require('lazy').setup({
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`.
   --
+  'tpope/vim-fugitive',
   -- See `:help gitsigns` to understand what the configuration keys do
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     opts = {
       signs = {
-        add = { text = '+' },
+        add = { text = '|' },
         change = { text = '~' },
         delete = { text = '_' },
         topdelete = { text = '‾' },
@@ -293,7 +327,7 @@ require('lazy').setup({
     opts = {
       -- delay between pressing a key and opening which-key (milliseconds)
       -- this setting is independent of vim.opt.timeoutlen
-      delay = 0,
+      delay = 1000,
       icons = {
         -- set icon mappings to true if you have a Nerd Font
         mappings = vim.g.have_nerd_font,
@@ -674,6 +708,7 @@ require('lazy').setup({
         jsonls = {},
         superhtml = {},
         cssls = {},
+        prettier = {},
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -725,8 +760,8 @@ require('lazy').setup({
       }
     end,
   },
-
-  { -- Autoformat
+  'prettier/prettier',
+  {
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
     cmd = { 'ConformInfo' },
@@ -734,7 +769,7 @@ require('lazy').setup({
       {
         '<leader>f',
         function()
-          require('conform').format { async = true, lsp_format = 'fallback' }
+          require('conform').format { async = true, lsp_format = 'never' }
         end,
         mode = '',
         desc = '[F]ormat buffer',
@@ -743,26 +778,28 @@ require('lazy').setup({
     opts = {
       notify_on_error = false,
       format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
         local disable_filetypes = { c = true, cpp = true }
         if disable_filetypes[vim.bo[bufnr].filetype] then
           return nil
         else
           return {
             timeout_ms = 500,
-            lsp_format = 'fallback',
+            lsp_format = 'never',
           }
         end
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        -- Conform can also run multiple formatters sequentially
-        python = { 'isort', 'black' },
-        --
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        javascript = { 'prettier', 'prettierd', stop_after_first = true },
+        python = { 'black' },
+        javascript = { 'prettier' },
+        typescript = { 'prettier' },
+        javascriptreact = { 'prettierd' },
+        typescriptreact = { 'prettier' },
+        html = { 'prettier' },
+        css = { 'prettier' },
+        json = { 'prettier' },
+        jsonc = { 'prettier' },
+        markdown = { 'prettierd' },
       },
     },
   },
@@ -1001,6 +1038,6 @@ require('lazy').setup({
     },
   },
 })
-
+vim.api.nvim_set_hl(0, 'ColorColumn', { bg = '#191a24' })
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
