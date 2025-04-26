@@ -28,7 +28,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
     vim.keymap.set('n', '<leader>ps', function()
       builtin.grep_string { search = vim.fn.input 'Grep > ' }
     end, { desc = '[P]roject [S]earch for text' })
-    vim.keymap.set('n', '<leader>gs', vim.cmd.Git, { desc = '[G]it [S]earch' })
+    -- vim.keymap.set('n', '<leader>gs', vim.cmd.Git, { desc = '[G]it [S]earch' })
     -- The easiest way to use Telescope, is to start by doing something like:
     --  :Telescope help_tags
     --
