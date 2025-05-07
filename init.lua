@@ -6,11 +6,36 @@
 
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
-
 vim.keymap.set('i', 'jj', '<esc>', { desc = 'Escape to Normal mode' })
 vim.keymap.set('n', '<leader>pv', vim.cmd.Ex, { desc = 'Go Back to [P]roject [V]iew' })
 
+local revert_lines = function()
+  -- Save start and end of selection
+  local start_line = vim.fn.line 'v'
+  local end_line = vim.fn.line '.'
+  if start_line > end_line then
+    start_line, end_line = end_line, start_line
+  end
+  -- print 'Reverting lines %d-%d'
+  -- Ask for confirmation
+  -- local answer = vim.fn.input(string.format('Revert lines %d-%d? (y/n): ', start_line, end_line))
+  -- if answer:lower() ~= 'y' then
+  --   print 'Canceled.'
+  --   return
+  -- end
+  -- Proceed: run Gdiffsplit, switch window, reselect, diffget
+  vim.cmd 'normal! gv' -- Reselect the visual area
+  vim.cmd ':Gdiffsplit' -- Run Gdiffsplit
+  vim.cmd 'wincmd w' -- Move to working window
+  vim.cmd('normal! ' .. start_line .. 'GV' .. end_line .. 'G') -- Reselect lines
+  vim.cmd ':diffget' -- Perform diffget
+  vim.cmd 'normal! <Esc>' -- Exit visual mode
+  vim.cmd 'q' -- Quit the other Gdiff window
+  vim.cmd 'w'
+end
 -- Set to true if you have a Nerd Font installed and selected in the terminal
+vim.keymap.set('x', '<leader>gr', revert_lines, { noremap = true, silent = true })
+vim.keymap.set('v', '<leader>gr', revert_lines, { noremap = true, silent = true })
 vim.g.have_nerd_font = true
 vim.opt.colorcolumn = '80'
 
